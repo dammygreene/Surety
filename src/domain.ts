@@ -247,6 +247,7 @@ export class SubmissionStore {
     this.db.prepare("UPDATE submissions SET token_symbol=? WHERE lower(token_symbol)=lower(?)").run(process.env.TEMPO_TOKEN_SYMBOL ?? "PathUSD", "pathUSD");
     if (this.list().length === 0 && process.env.SURETY_SEED_DEMO !== "false") {
       this.create({
+        id: process.env.SURETY_DEMO_SUBMISSION_ID ?? "00000000-0000-4000-8000-000000000001",
         title: "Improve parser error message",
         externalUrl: "https://github.com/surety-demo/example/pull/1",
         githubUserId: "1001",
@@ -295,6 +296,7 @@ export class SubmissionStore {
   }
 
   create(input: {
+    id?: string;
     title: string;
     externalUrl: string;
     githubUserId: string;
@@ -307,7 +309,7 @@ export class SubmissionStore {
     githubNumber?: number;
     githubHeadSha?: string;
   }): Submission {
-    const id = randomUUID();
+    const id = input.id ?? randomUUID();
     const contributorId = this.upsertContributor(input.githubUserId, input.githubLogin, input.payerDid);
     const amount = input.requiredAmountBaseUnits ?? this.quoteForContributor(contributorId);
     const timestamp = now();

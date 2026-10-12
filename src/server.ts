@@ -280,7 +280,16 @@ app.get("/api/reputation/:contributorId", (c) => {
 });
 
 app.get("/pay/:id", (c) => {
-  const submission = store.get(c.req.param("id"));
+  let submission = store.get(c.req.param("id"));
+  const serialized = c.req.query("submission");
+  if (!submission && serialized) {
+    try {
+      const candidate = JSON.parse(Buffer.from(serialized, "base64url").toString("utf8")) as ReturnType<SubmissionStore["get"]>;
+      if (candidate && candidate.id === c.req.param("id") && candidate.chainId === 42431) submission = candidate;
+    } catch {
+      return c.html("<h1>Invalid submission reference</h1>", 400);
+    }
+  }
   if (!submission) return c.html("<h1>Submission not found</h1>", 404);
   const amount = submission.requiredAmountBaseUnits === "0" ? "$0 (trusted contributor)" : `${submission.requiredAmountBaseUnits} base units`;
   const bondId = keccak256(stringToHex(submission.id));

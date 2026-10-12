@@ -1,3 +1,6 @@
-import { routeHandler } from "../src/vercel-handler.js";
+import type { IncomingMessage, ServerResponse } from "node:http";
 
-export default routeHandler("/");
+export default (_request: IncomingMessage, response: ServerResponse) => {
+  response.setHeader("content-type", "text/html; charset=utf-8");
+  response.end(`<!doctype html><html lang="en"><meta name="viewport" content="width=device-width"><title>Surety inbox</title><style>body{font:16px system-ui;max-width:960px;margin:0 auto;padding:32px;background:#f5f3ef}main{background:#fff;padding:24px;border-radius:12px}article{padding:16px 0;border-bottom:1px solid #ddd}a{color:#165b4c}</style><main><h1>Surety inbox</h1><p>Escrow-backed submission bonds · Tempo Moderato · chain 42431</p><p><a href="https://explore.testnet.tempo.xyz/address/0x9eb4ffc29d5d5c636616225b3bb7d296ab5f8f95">Deployed escrow contract</a></p><section id="inbox">Loading submissions…</section><script>async function load(){const response=await fetch('/api/submissions');const data=await response.json();document.querySelector('#inbox').innerHTML=data.submissions.map(s=>'<article><strong>'+s.title+'</strong><p>'+s.contributorLabel+' · '+s.moneyStatus+' · '+s.requiredAmountBaseUnits+' '+s.tokenSymbol+'</p><p><a href="/pay/'+encodeURIComponent(s.id)+'">Open payment page</a></p></article>').join('')}load().catch(()=>document.querySelector('#inbox').textContent='Unable to load submissions');</script></main></html>`);
+};
