@@ -1,8 +1,8 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/api/_/" },
-    { "source": "/pay/:id", "destination": "/api/_/pay/:id" },
-    { "source": "/auth/github/start", "destination": "/api/_/auth/github/start" },
-    { "source": "/auth/github/callback", "destination": "/api/_/auth/github/callback" }
+    { "source": "/", "destination": "/api/index" },
+    { "source": "/pay/:id", "destination": "/api/pay/:id" },
+    { "source": "/auth/github/start", "destination": "/api/auth/github/start" },
+    { "source": "/auth/github/callback", "destination": "/api/auth/github/callback" }
   ]
 }
