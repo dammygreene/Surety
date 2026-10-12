@@ -2,6 +2,9 @@
   "name": "surety",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22.5.0"
+  },
   "description": "Refundable accountability bonds for open submissions",
   "type": "module",
   "scripts": {

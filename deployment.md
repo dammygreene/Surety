@@ -12,7 +12,13 @@ Keep separate `development`, `testnet/demo`, and `production` environments. The 
 - A durable scheduled job or worker for deadline scanning and reconciliation, plus a contributor reclaim path where supported.
 - Secrets available at runtime through the host's environment/secret manager.
 
-Vercel can work for stateless Next.js routes if the selected SDK and request duration fit its runtime limits. Do not assume it can run a long-lived worker or durable scheduler. Run workers separately or use a scheduler that triggers a protected job. Test real webhook retries and database persistence on the chosen host.
+Vercel can run the included Hono function adapter with Node.js 22. It cannot
+provide a durable local SQLite database: when `VERCEL=1`, Surety uses
+`/tmp/surety.sqlite` only to avoid a read-only filesystem failure, and that
+file can disappear between invocations. Use an external durable database
+before relying on webhook deduplication, OAuth sessions, or payment history.
+Do not run the keeper as a long-lived Vercel function; use a separate worker
+or protected scheduled job.
 
 ## Deploy steps
 
@@ -27,6 +33,11 @@ Vercel can work for stateless Next.js routes if the selected SDK and request dur
 9. Fund test accounts from the current official faucet.
 10. Run the end-to-end acceptance test and record explorer links.
 11. Check logs for secret redaction and ensure database backups/retention are understood.
+
+For this repository's Vercel deployment, commit `vercel.json` and the
+`api/[...path].ts` adapter, select Node.js 22.x, and redeploy after changing
+environment variables. Test `/`, `/api/health`, `/api/submissions`, `/pay/:id`,
+and the GitHub OAuth callback route after deployment.
 
 ## Startup checks
 

@@ -65,6 +65,13 @@ GITHUB_WEBHOOK_SECRET=
 GITHUB_APP_SLUG=
 ```
 
+On Vercel, set `SURETY_PUBLIC_URL` to the exact deployed HTTPS origin and set
+the GitHub OAuth callback to
+`https://<deployment-origin>/auth/github/callback`. Do not set
+`SURETY_DATABASE_PATH` to a relative path for Vercel; the application falls
+back to `/tmp/surety.sqlite`, which is not durable. Use an external database
+for persistent deployment.
+
 Use the exact auth flow implemented. Store the private key as a secret; normalize escaped newlines carefully at runtime. Never log private key material or install tokens.
 
 The contributor flow uses GitHub OAuth with PKCE. Register

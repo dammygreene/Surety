@@ -1,5 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 import { createHash, randomUUID } from "node:crypto";
+import { isAbsolute } from "node:path";
 
 export const outcomes = ["pending", "valid", "slop", "ignored"] as const;
 export type Outcome = (typeof outcomes)[number];
@@ -210,17 +211,25 @@ function asSubmission(row: Row): Submission {
   };
 }
 
+function databasePath(): string {
+  const configured = process.env.SURETY_DATABASE_PATH;
+  if (!process.env.VERCEL) return configured ?? "surety.sqlite";
+  if (configured && isAbsolute(configured)) return configured;
+  return "/tmp/surety.sqlite";
+}
+
 export class SubmissionStore {
   readonly db: DatabaseSync;
   private readonly defaultBond: string;
   private readonly tokenAddress: string;
 
-  constructor(filename = process.env.SURETY_DATABASE_PATH ?? "surety.sqlite") {
+  constructor(filename = databasePath()) {
     this.db = new DatabaseSync(filename);
     this.db.exec(schema);
     try { this.db.exec("ALTER TABLE submissions ADD COLUMN bond_id TEXT"); } catch (error) {
       if (!(error instanceof Error) || !/duplicate column name/i.test(error.message)) throw error;
     }
+
     this.db.exec("CREATE UNIQUE INDEX IF NOT EXISTS submissions_bond_id_unique ON submissions(bond_id) WHERE bond_id IS NOT NULL");
     for (const column of [
       "github_repository TEXT", "github_installation_id TEXT", "github_number INTEGER",
