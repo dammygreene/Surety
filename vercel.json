@@ -1,10 +1,8 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/api/$1" }
-  ],
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "nodejs22.x"
-    }
-  }
+    { "source": "/", "destination": "/api/" },
+    { "source": "/pay/:id", "destination": "/api/pay/:id" },
+    { "source": "/auth/github/start", "destination": "/api/auth/github/start" },
+    { "source": "/auth/github/callback", "destination": "/api/auth/github/callback" }
+  ]
 }
